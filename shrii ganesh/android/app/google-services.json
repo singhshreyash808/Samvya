@@ -1,0 +1,48 @@
+{
+  "project_info": {
+    "project_number": "773203331467",
+    "project_id": "samvya-cbaa8",
+    "storage_bucket": "samvya-cbaa8.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:773203331467:android:17e9ff3a710d29c695878e",
+        "android_client_info": {
+          "package_name": "com.example.samvya"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBOEWxrPpFob0Scb1wV1FudC38ZZeLBkO0"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:773203331467:android:579b741f2617a91d95878e",
+        "android_client_info": {
+          "package_name": "com.trinex.samvya"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBOEWxrPpFob0Scb1wV1FudC38ZZeLBkO0"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
