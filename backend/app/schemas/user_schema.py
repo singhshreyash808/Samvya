@@ -1,5 +1,7 @@
-from pydantic import BaseModel
+from pydantic import BaseModel, EmailStr
 from typing import Optional
+
+from app.schemas.device_schema import DeviceRegister
 
 
 class RegisterUser(BaseModel):
@@ -8,9 +10,20 @@ class RegisterUser(BaseModel):
 
     mobile: str
 
-    email: Optional[str] = None
+    email: Optional[EmailStr] = None
 
     password: str
+
+    device: DeviceRegister
+
+
+class LoginUser(BaseModel):
+
+    mobile: str
+
+    password: str
+
+    device: DeviceRegister
 
 
 class UserResponse(BaseModel):

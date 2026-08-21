@@ -3,6 +3,7 @@ import uuid
 from sqlalchemy import Column
 from sqlalchemy import String
 from sqlalchemy import DateTime
+from sqlalchemy import Boolean
 from sqlalchemy.sql import func
 
 from app.database.database import Base
@@ -26,13 +27,15 @@ class User(Base):
     mobile = Column(
         String,
         unique=True,
-        nullable=False
+        nullable=False,
+        index=True
     )
 
     email = Column(
         String,
         unique=True,
-        nullable=True
+        nullable=True,
+        index=True
     )
 
     password_hash = Column(
@@ -45,6 +48,18 @@ class User(Base):
         nullable=True
     )
 
+    # Account status
+    is_active = Column(
+        Boolean,
+        default=True
+    )
+
+    # Mobile/Email/KYC verification
+    is_verified = Column(
+        Boolean,
+        default=False
+    )
+
     created_at = Column(
         DateTime(timezone=True),
         server_default=func.now()
@@ -52,5 +67,6 @@ class User(Base):
 
     updated_at = Column(
         DateTime(timezone=True),
+        server_default=func.now(),
         onupdate=func.now()
     )
