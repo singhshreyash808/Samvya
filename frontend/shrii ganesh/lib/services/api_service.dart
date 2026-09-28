@@ -9,7 +9,7 @@ class ApiService {
   // CHANGE YOUR IP HERE
   // ===========================
 
-  static const String baseUrl = "http://10.120.31.222";
+  static const String baseUrl = "http://192.168.29.184:8000";
 
   static const FlutterSecureStorage storage = FlutterSecureStorage();
 
@@ -85,13 +85,20 @@ class ApiService {
       print("ERROR DATA:");
       print(e.response?.data);
 
-      // Extract "detail" from JSON error body, fallback to a clean message
       String errorMessage = "Registration failed. Please try again.";
-      final data = e.response?.data;
-      if (data is Map && data["detail"] != null) {
-        errorMessage = data["detail"].toString();
-      } else if (data is String && data.isNotEmpty) {
-        errorMessage = data;
+      if (e.type == DioExceptionType.connectionTimeout ||
+          e.type == DioExceptionType.connectionError ||
+          e.type == DioExceptionType.receiveTimeout) {
+        errorMessage = "Connection to server failed. Please check your internet or server IP address.";
+      } else if (e.response != null) {
+        final data = e.response?.data;
+        if (data is Map && data["detail"] != null) {
+          errorMessage = data["detail"].toString();
+        } else if (data is String && data.isNotEmpty) {
+          errorMessage = data;
+        } else {
+          errorMessage = "Server error (${e.response?.statusCode}). Please try again.";
+        }
       }
 
       return {
