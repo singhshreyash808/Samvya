@@ -9,7 +9,7 @@ class ApiService {
   // CHANGE YOUR IP HERE
   // ===========================
 
-  static const String baseUrl = "http://192.168.29.184:8000";
+  static const String baseUrl = "http://192.168.15.214:8000";
 
   static const FlutterSecureStorage storage = FlutterSecureStorage();
 

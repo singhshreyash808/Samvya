@@ -31,7 +31,7 @@ class BankTransaction {
       amount: (json['amount'] as num).toDouble(),
       description: json['description'] as String?,
       status: json['status'] as String,
-      createdAt: DateTime.parse(json['created_at'] as String),
+      createdAt: json['created_at'] != null ? DateTime.tryParse(json['created_at'] as String) ?? DateTime.now() : DateTime.now(),
     );
   }
 

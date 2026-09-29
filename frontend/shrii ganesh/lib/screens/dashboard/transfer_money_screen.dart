@@ -5,8 +5,15 @@ import 'package:samvya/widgets/cheque_animation_overlay.dart';
 
 class TransferMoneyScreen extends StatefulWidget {
   final BankAccount senderAccount;
+  final String? initialRecipientAccount;
+  final String? initialRecipientName;
 
-  const TransferMoneyScreen({super.key, required this.senderAccount});
+  const TransferMoneyScreen({
+    super.key, 
+    required this.senderAccount,
+    this.initialRecipientAccount,
+    this.initialRecipientName,
+  });
 
   @override
   State<TransferMoneyScreen> createState() => _TransferMoneyScreenState();
@@ -14,13 +21,29 @@ class TransferMoneyScreen extends StatefulWidget {
 
 class _TransferMoneyScreenState extends State<TransferMoneyScreen> {
   final _formKey = GlobalKey<FormState>();
-  final _recipientNameCtrl = TextEditingController();
-  final _recipientAccountCtrl = TextEditingController();
+  late final TextEditingController _recipientNameCtrl;
+  late final TextEditingController _recipientAccountCtrl;
   final _amountCtrl = TextEditingController();
   final _descCtrl = TextEditingController();
   
   bool _isLoading = false;
   final TransactionService _transactionService = TransactionService();
+
+  @override
+  void initState() {
+    super.initState();
+    _recipientNameCtrl = TextEditingController(text: widget.initialRecipientName ?? '');
+    _recipientAccountCtrl = TextEditingController(text: widget.initialRecipientAccount ?? '');
+  }
+
+  @override
+  void dispose() {
+    _recipientNameCtrl.dispose();
+    _recipientAccountCtrl.dispose();
+    _amountCtrl.dispose();
+    _descCtrl.dispose();
+    super.dispose();
+  }
 
   void _sendMoney() async {
     if (!_formKey.currentState!.validate()) return;

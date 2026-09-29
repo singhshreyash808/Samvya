@@ -31,7 +31,7 @@ class BankAccount {
       accountHolderName: json['account_holder_name'] as String,
       phoneNumber: json['phone_number'] as String,
       balance: (json['balance'] as num?)?.toDouble() ?? 0.0,
-      createdAt: json['created_at'] as String,
+      createdAt: json['created_at'] as String? ?? '',
     );
   }
 
