@@ -15,8 +15,8 @@ class BankAccountCreate(BankAccountBase):
 class BankAccountResponse(BankAccountBase):
     id: str
     user_id: str
-    balance: float
-    created_at: datetime
+    balance: Optional[float] = 0.0
+    created_at: Optional[datetime] = None
     
     # We purposefully do NOT return the tpin or tpin_hash
 
