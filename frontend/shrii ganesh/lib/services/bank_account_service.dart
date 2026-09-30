@@ -35,8 +35,8 @@ class BankAccountService {
       final List data = response.data;
       return data.map((e) => BankAccount.fromJson(e)).toList();
     } on DioException {
-      // Return empty on network error (offline handled in UI)
-      return [];
+      // Rethrow to let the UI handle the offline state
+      rethrow;
     }
   }
 

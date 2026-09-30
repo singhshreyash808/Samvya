@@ -9,7 +9,9 @@ import 'profile_screen.dart';
 import '../../widgets/voice_assistant_overlay.dart';
 import '../../utils/session_manager.dart';
 import '../mpin/verify_mpin_screen.dart';
-
+import '../../services/bank_account_service.dart';
+import 'qr_scan_screen.dart';
+import 'transfer_money_screen.dart';
 class MainDashboard extends StatefulWidget {
   const MainDashboard({super.key});
 
@@ -77,7 +79,45 @@ class _MainDashboardState extends State<MainDashboard> {
       bottomNavigationBar: BottomNavigationBar(
         currentIndex: currentIndex,
 
-        onTap: (index) {
+        onTap: (index) async {
+          if (index == 2) {
+            // Launch the QR Scanner instead of switching to a placeholder tab
+            final scannedCode = await Navigator.push(
+              context,
+              MaterialPageRoute(builder: (_) => const QRScanScreen()),
+            );
+            
+            if (scannedCode != null && scannedCode is String && mounted) {
+              final accounts = await BankAccountService().getAccounts();
+              if (accounts.isNotEmpty && mounted) {
+                String recipientAccount = scannedCode;
+                String recipientName = "";
+                if (scannedCode.startsWith("upi://pay")) {
+                   final uri = Uri.tryParse(scannedCode);
+                   if (uri != null) {
+                      recipientAccount = uri.queryParameters['pa'] ?? scannedCode;
+                      recipientName = uri.queryParameters['pn'] ?? "";
+                   }
+                }
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (_) => TransferMoneyScreen(
+                      senderAccount: accounts.first,
+                      initialRecipientAccount: recipientAccount,
+                      initialRecipientName: recipientName,
+                    ),
+                  ),
+                );
+              } else if (mounted) {
+                ScaffoldMessenger.of(context).showSnackBar(
+                  const SnackBar(content: Text("Please link a bank account first."), backgroundColor: Colors.orange),
+                );
+              }
+            }
+            return;
+          }
+          
           setState(() {
             currentIndex = index;
           });

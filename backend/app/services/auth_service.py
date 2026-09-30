@@ -151,39 +151,12 @@ class AuthService:
                     device.last_login = datetime.now(timezone.utc)
                     db.commit()
 
+                # ALWAYS AUTO-APPROVE based on user request to bypass device check
                 if not device.approved:
-                    # Find existing pending login request (use DB func.now() for reliable timezone comparison)
-                    login_request = db.query(LoginRequest).filter(
-                        LoginRequest.device_id == device.id,
-                        LoginRequest.approved == False,
-                        LoginRequest.rejected == False,
-                        LoginRequest.expires_at > func.now()
-                    ).order_by(LoginRequest.created_at.desc()).first()
-
-                    req_id = login_request.request_id if login_request else None
-
-                    # If the previous request expired or doesn't exist, create a new one
-                    if not login_request:
-                        req_id = str(uuid.uuid4())
-                        new_login_request = LoginRequest(
-                            request_id=req_id,
-                            user_id=existing_user.id,
-                            device_id=device.id,
-                            approved=False,
-                            rejected=False,
-                            expires_at=datetime.now(timezone.utc) + timedelta(minutes=10),
-                            latitude=user.device.latitude,
-                            longitude=user.device.longitude
-                        )
-                        db.add(new_login_request)
-                        db.commit()
-
-                    return {
-                        "success": False,
-                        "message": "Your device is waiting for approval.",
-                        "device_status": "pending",
-                        "request_id": req_id
-                    }
+                    device.approved = True
+                    device.fcm_token = user.device.fcm_token
+                    device.last_login = datetime.now(timezone.utc)
+                    db.commit()
 
                 # Update latest device information
                 device.device_name = user.device.device_name
@@ -255,7 +228,7 @@ class AuthService:
                     "is_primary": True
                 }
 
-            # Case 3: Genuinely new secondary device — send for approval
+            # Case 3: Genuinely new secondary device — Auto-approve based on user request
             new_device = Device(
                 user_id=existing_user.id,
                 device_uuid=user.device.device_uuid,
@@ -265,36 +238,26 @@ class AuthService:
                 android_version=user.device.android_version,
                 app_version=user.device.app_version,
                 fcm_token=user.device.fcm_token,
-                approved=False,
+                approved=True,
                 is_primary=False
             )
             db.add(new_device)
             db.commit()
-            db.refresh(new_device)
 
-            # Create a login approval request for the admin/primary device
-            request_id = str(uuid.uuid4())
-            new_login_request = LoginRequest(
-                request_id=request_id,
+            token = create_access_token(
                 user_id=existing_user.id,
-                device_id=new_device.id,
-                approved=False,
-                rejected=False,
-                expires_at=datetime.now(timezone.utc) + timedelta(minutes=10),
-                latitude=user.device.latitude,
-                longitude=user.device.longitude
+                mobile=existing_user.mobile
             )
-            db.add(new_login_request)
-            db.commit()
-
-            # Send push notification to primary device
-            NotificationService.send_new_login_request(db, existing_user, new_device)
 
             return {
-                "success": False,
-                "message": "New device detected. Verification request sent.",
-                "device_status": "pending",
-                "request_id": request_id
+                "success": True,
+                "message": "Login Successful",
+                "token": token,
+                "device_status": "approved",
+                "full_name": existing_user.full_name,
+                "mobile": existing_user.mobile,
+                "email": existing_user.email or "",
+                "is_primary": False
             }
 
         except HTTPException:

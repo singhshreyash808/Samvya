@@ -9,7 +9,7 @@ class ApiService {
   // CHANGE YOUR IP HERE
   // ===========================
 
-  static const String baseUrl = "http://192.168.15.214:8000";
+  static const String baseUrl = "http://192.168.17.253:8000";
 
   static const FlutterSecureStorage storage = FlutterSecureStorage();
 
@@ -52,35 +52,24 @@ class ApiService {
   // REGISTER
   // ===========================
 
-  Future<Map<String, dynamic>> register(
-      Map<String, dynamic> data) async {
-
+  Future<Map<String, dynamic>> register(Map<String, dynamic> data) async {
     try {
-
       print("REGISTER REQUEST");
       print(data);
 
-      Response response = await _dio.post(
-        "/auth/register",
-        data: data,
-      );
+      Response response = await _dio.post("/auth/register", data: data);
 
       final result = Map<String, dynamic>.from(response.data);
 
       if (result["success"] == true && result["token"] != null) {
-        await storage.write(
-          key: "jwt",
-          value: result["token"],
-        );
+        await storage.write(key: "jwt", value: result["token"]);
       }
 
       print("REGISTER SUCCESS");
       print(result);
 
       return result;
-
     } on DioException catch (e) {
-
       print("STATUS CODE: ${e.response?.statusCode}");
       print("ERROR DATA:");
       print(e.response?.data);
@@ -89,7 +78,8 @@ class ApiService {
       if (e.type == DioExceptionType.connectionTimeout ||
           e.type == DioExceptionType.connectionError ||
           e.type == DioExceptionType.receiveTimeout) {
-        errorMessage = "Connection to server failed. Please check your internet or server IP address.";
+        errorMessage =
+            "Connection to server failed. Please check your internet or server IP address.";
       } else if (e.response != null) {
         final data = e.response?.data;
         if (data is Map && data["detail"] != null) {
@@ -97,49 +87,34 @@ class ApiService {
         } else if (data is String && data.isNotEmpty) {
           errorMessage = data;
         } else {
-          errorMessage = "Server error (${e.response?.statusCode}). Please try again.";
+          errorMessage =
+              "Server error (${e.response?.statusCode}). Please try again.";
         }
       }
 
-      return {
-        "success": false,
-        "message": errorMessage,
-      };
-
+      return {"success": false, "message": errorMessage};
     } catch (e) {
-
       print(e);
 
       return {
         "success": false,
         "message": "Registration failed. Please check your connection.",
       };
-
     }
-
   }
 
   // ===========================
   // LOGIN
   // ===========================
 
-  Future<Map<String, dynamic>> login(
-      Map<String, dynamic> data) async {
+  Future<Map<String, dynamic>> login(Map<String, dynamic> data) async {
     try {
-      final response = await _dio.post(
-        "/auth/login",
-        data: jsonEncode(data),
-      );
+      final response = await _dio.post("/auth/login", data: jsonEncode(data));
 
-      final result =
-      Map<String, dynamic>.from(response.data);
+      final result = Map<String, dynamic>.from(response.data);
 
-      if (result["success"] == true &&
-          result["token"] != null) {
-        await storage.write(
-          key: "jwt",
-          value: result["token"],
-        );
+      if (result["success"] == true && result["token"] != null) {
+        await storage.write(key: "jwt", value: result["token"]);
 
         // Save user info so profile screen can show real name
         final prefs = await _getPrefs();
@@ -156,13 +131,13 @@ class ApiService {
       }
 
       return result;
-
     } on DioException catch (e) {
       String errorMessage = "Login Failed";
       if (e.type == DioExceptionType.connectionTimeout ||
           e.type == DioExceptionType.connectionError ||
           e.type == DioExceptionType.receiveTimeout) {
-        errorMessage = "Connection to server failed. Please check your internet or server IP address.";
+        errorMessage =
+            "Connection to server failed. Please check your internet or server IP address.";
       } else if (e.response != null) {
         final data = e.response?.data;
         if (data is Map && data["detail"] != null) {
@@ -170,14 +145,12 @@ class ApiService {
         } else if (data is String && data.isNotEmpty) {
           errorMessage = data;
         } else {
-          errorMessage = "Server error (${e.response?.statusCode}). Please try again.";
+          errorMessage =
+              "Server error (${e.response?.statusCode}). Please try again.";
         }
       }
 
-      return {
-        "success": false,
-        "message": errorMessage,
-      };
+      return {"success": false, "message": errorMessage};
     }
   }
 
@@ -185,25 +158,17 @@ class ApiService {
   // CHECK DEVICE STATUS
   // ===========================
 
-  Future<Map<String, dynamic>> checkDeviceStatus(
-      String requestId) async {
+  Future<Map<String, dynamic>> checkDeviceStatus(String requestId) async {
     try {
       final response = await _dio.post(
         "/auth/check-device-status",
-        data: jsonEncode({
-          "request_id": requestId,
-        }),
+        data: jsonEncode({"request_id": requestId}),
       );
 
-      final result =
-      Map<String, dynamic>.from(response.data);
+      final result = Map<String, dynamic>.from(response.data);
 
-      if (result["approved"] == true &&
-          result["token"] != null) {
-        await storage.write(
-          key: "jwt",
-          value: result["token"],
-        );
+      if (result["approved"] == true && result["token"] != null) {
+        await storage.write(key: "jwt", value: result["token"]);
 
         // Save user info so profile screen can show real name
         final prefs = await _getPrefs();
@@ -220,14 +185,12 @@ class ApiService {
       }
 
       return result;
-
     } on DioException catch (e) {
       return {
         "success": false,
         "approved": false,
         "message":
-        e.response?.data["detail"] ??
-            "Unable to check device status",
+            e.response?.data["detail"] ?? "Unable to check device status",
       };
     }
   }
@@ -236,26 +199,20 @@ class ApiService {
   // APPROVE DEVICE
   // ===========================
 
-  Future<Map<String, dynamic>> approveDevice(
-      String deviceUuid) async {
+  Future<Map<String, dynamic>> approveDevice(String deviceUuid) async {
     try {
       final token = await storage.read(key: "jwt");
       final response = await _dio.post(
         "/auth/approve-device",
         queryParameters: token != null ? {"token": token} : {},
-        data: jsonEncode({
-          "device_uuid": deviceUuid,
-        }),
+        data: jsonEncode({"device_uuid": deviceUuid}),
       );
 
       return Map<String, dynamic>.from(response.data);
-
     } on DioException catch (e) {
       return {
         "success": false,
-        "message":
-        e.response?.data["detail"] ??
-            "Unable to approve device",
+        "message": e.response?.data["detail"] ?? "Unable to approve device",
       };
     }
   }
@@ -264,26 +221,20 @@ class ApiService {
   // REJECT DEVICE
   // ===========================
 
-  Future<Map<String, dynamic>> rejectDevice(
-      String deviceUuid) async {
+  Future<Map<String, dynamic>> rejectDevice(String deviceUuid) async {
     try {
       final token = await storage.read(key: "jwt");
       final response = await _dio.post(
         "/auth/reject-device",
         queryParameters: token != null ? {"token": token} : {},
-        data: jsonEncode({
-          "device_uuid": deviceUuid,
-        }),
+        data: jsonEncode({"device_uuid": deviceUuid}),
       );
 
       return Map<String, dynamic>.from(response.data);
-
     } on DioException catch (e) {
       return {
         "success": false,
-        "message":
-        e.response?.data["detail"] ??
-            "Unable to reject device",
+        "message": e.response?.data["detail"] ?? "Unable to reject device",
       };
     }
   }
@@ -301,7 +252,7 @@ class ApiService {
           "success": false,
           "pending": [],
           "count": 0,
-          "message": "Not logged in. Please login first."
+          "message": "Not logged in. Please login first.",
         };
       }
 
@@ -311,24 +262,19 @@ class ApiService {
       );
 
       return Map<String, dynamic>.from(response.data);
-
     } on DioException catch (e) {
       String msg = "Failed to load pending devices";
       if (e.type == DioExceptionType.connectionTimeout ||
           e.type == DioExceptionType.connectionError ||
           e.type == DioExceptionType.receiveTimeout) {
-        msg = "Cannot connect to server. Check IP address or internet connection.";
+        msg =
+            "Cannot connect to server. Check IP address or internet connection.";
       } else if (e.response != null &&
           e.response?.data is Map &&
           e.response?.data["detail"] != null) {
         msg = e.response!.data["detail"].toString();
       }
-      return {
-        "success": false,
-        "pending": [],
-        "count": 0,
-        "message": msg,
-      };
+      return {"success": false, "pending": [], "count": 0, "message": msg};
     }
   }
 
@@ -345,7 +291,7 @@ class ApiService {
           "success": false,
           "devices": [],
           "count": 0,
-          "message": "Not logged in. Please login first."
+          "message": "Not logged in. Please login first.",
         };
       }
 
@@ -355,24 +301,19 @@ class ApiService {
       );
 
       return Map<String, dynamic>.from(response.data);
-
     } on DioException catch (e) {
       String msg = "Failed to load connected devices";
       if (e.type == DioExceptionType.connectionTimeout ||
           e.type == DioExceptionType.connectionError ||
           e.type == DioExceptionType.receiveTimeout) {
-        msg = "Cannot connect to server. Check your IP address or internet connection.";
+        msg =
+            "Cannot connect to server. Check your IP address or internet connection.";
       } else if (e.response != null &&
           e.response?.data is Map &&
           e.response?.data["detail"] != null) {
         msg = e.response!.data["detail"].toString();
       }
-      return {
-        "success": false,
-        "devices": [],
-        "count": 0,
-        "message": msg,
-      };
+      return {"success": false, "devices": [], "count": 0, "message": msg};
     }
   }
 
@@ -396,7 +337,10 @@ class ApiService {
   // VOICE ASSISTANT
   // ===========================
 
-  Future<Map<String, dynamic>> queryAssistant(String queryText, String languageCode) async {
+  Future<Map<String, dynamic>> queryAssistant(
+    String queryText,
+    String languageCode,
+  ) async {
     try {
       final token = await storage.read(key: "jwt");
       final response = await _dio.post(
@@ -411,7 +355,7 @@ class ApiService {
       print("Assistant Error: ${e.response?.data}");
       return {
         "success": false,
-        "response": "Unable to connect to the assistant server."
+        "response": "Unable to connect to the assistant server.",
       };
     }
   }
