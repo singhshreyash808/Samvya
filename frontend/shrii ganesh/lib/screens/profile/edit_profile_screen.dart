@@ -9,7 +9,6 @@ class EditProfileScreen extends StatefulWidget {
 }
 
 class _EditProfileScreenState extends State<EditProfileScreen> {
-
   final nameController = TextEditingController();
   final mobileController = TextEditingController();
   final addressController = TextEditingController();
@@ -25,31 +24,22 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
   }
 
   Future<void> loadProfile() async {
+    nameController.text = await LocalStorageService.getName();
 
-    nameController.text =
-    await LocalStorageService.getName();
+    mobileController.text = await LocalStorageService.getMobile();
 
-    mobileController.text =
-    await LocalStorageService.getMobile();
+    addressController.text = await LocalStorageService.getAddress();
 
-    addressController.text =
-    await LocalStorageService.getAddress();
+    villageController.text = await LocalStorageService.getVillage();
 
-    villageController.text =
-    await LocalStorageService.getVillage();
+    districtController.text = await LocalStorageService.getDistrict();
 
-    districtController.text =
-    await LocalStorageService.getDistrict();
+    stateController.text = await LocalStorageService.getState();
 
-    stateController.text =
-    await LocalStorageService.getState();
-
-    pinController.text =
-    await LocalStorageService.getPinCode();
+    pinController.text = await LocalStorageService.getPinCode();
   }
 
   Future<void> saveProfile() async {
-
     await LocalStorageService.updateProfile(
       name: nameController.text.trim(),
       mobile: mobileController.text.trim(),
@@ -64,32 +54,25 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
     if (!mounted) return;
 
     ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(
-        content: Text("Profile Updated Successfully"),
-      ),
+      const SnackBar(content: Text("Profile Updated Successfully")),
     );
 
     Navigator.pop(context);
   }
 
   Widget buildField(
-      TextEditingController controller,
-      String label,
-      IconData icon,
-      ) {
+    TextEditingController controller,
+    String label,
+    IconData icon,
+  ) {
     return Padding(
       padding: const EdgeInsets.only(bottom: 15),
       child: TextField(
         controller: controller,
         decoration: InputDecoration(
-          prefixIcon: Icon(
-            icon,
-            color: const Color(0xff0F9D8A),
-          ),
+          prefixIcon: Icon(icon, color: const Color(0xff0F9D8A)),
           labelText: label,
-          border: OutlineInputBorder(
-            borderRadius: BorderRadius.circular(15),
-          ),
+          border: OutlineInputBorder(borderRadius: BorderRadius.circular(15)),
         ),
       ),
     );
@@ -109,22 +92,17 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
 
   @override
   Widget build(BuildContext context) {
-
     return Scaffold(
-
       appBar: AppBar(
         title: const Text("Edit Profile"),
         backgroundColor: const Color(0xff0F9D8A),
       ),
 
       body: SingleChildScrollView(
-
         padding: const EdgeInsets.all(20),
 
         child: Column(
-
           children: [
-
             const SizedBox(height: 20),
 
             CircleAvatar(
@@ -134,56 +112,25 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                 nameController.text.isEmpty
                     ? "U"
                     : nameController.text[0].toUpperCase(),
-                style: const TextStyle(
-                  fontSize: 35,
-                  color: Colors.white,
-                ),
+                style: const TextStyle(fontSize: 35, color: Colors.white),
               ),
             ),
 
             const SizedBox(height: 30),
 
-            buildField(
-              nameController,
-              "Full Name",
-              Icons.person,
-            ),
+            buildField(nameController, "Full Name", Icons.person),
 
-            buildField(
-              mobileController,
-              "Mobile Number",
-              Icons.phone,
-            ),
+            buildField(mobileController, "Mobile Number", Icons.phone),
 
-            buildField(
-              addressController,
-              "Address",
-              Icons.location_on,
-            ),
+            buildField(addressController, "Address", Icons.location_on),
 
-            buildField(
-              villageController,
-              "Village",
-              Icons.home,
-            ),
+            buildField(villageController, "Village", Icons.home),
 
-            buildField(
-              districtController,
-              "District",
-              Icons.location_city,
-            ),
+            buildField(districtController, "District", Icons.location_city),
 
-            buildField(
-              stateController,
-              "State",
-              Icons.map,
-            ),
+            buildField(stateController, "State", Icons.map),
 
-            buildField(
-              pinController,
-              "PIN Code",
-              Icons.pin_drop,
-            ),
+            buildField(pinController, "PIN Code", Icons.pin_drop),
 
             const SizedBox(height: 30),
 
@@ -191,10 +138,8 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
               width: double.infinity,
               height: 55,
               child: ElevatedButton.icon(
-
                 style: ElevatedButton.styleFrom(
-                  backgroundColor:
-                  const Color(0xff0F9D8A),
+                  backgroundColor: const Color(0xff0F9D8A),
                 ),
 
                 onPressed: saveProfile,
@@ -203,14 +148,10 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
 
                 label: const Text(
                   "SAVE PROFILE",
-                  style: TextStyle(
-                    fontSize: 18,
-                    color: Colors.white,
-                  ),
+                  style: TextStyle(fontSize: 18, color: Colors.white),
                 ),
               ),
             ),
-
           ],
         ),
       ),
