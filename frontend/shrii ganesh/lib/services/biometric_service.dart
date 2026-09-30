@@ -1,7 +1,6 @@
 import 'package:local_auth/local_auth.dart';
 
 class BiometricService {
-  
   static final LocalAuthentication auth = LocalAuthentication();
 
   static Future<bool> authenticate() async {
