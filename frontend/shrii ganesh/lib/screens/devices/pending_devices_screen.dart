@@ -247,6 +247,7 @@ class _PendingDevicesScreenState extends State<PendingDevicesScreen> {
           androidVersion: device["android_version"] ?? "",
           appVersion: device["app_version"] ?? "",
           createdAt: device["created_at"] ?? "",
+          expiresAt: device["expires_at"] ?? "",
           onApprove: () => _approve(
             device["device_uuid"],
             device["device_name"] ?? "this device",
@@ -263,13 +264,14 @@ class _PendingDevicesScreenState extends State<PendingDevicesScreen> {
 
 // ─── Device Request Card ───────────────────────────────────────────────────────
 
-class _DeviceRequestCard extends StatelessWidget {
+class _DeviceRequestCard extends StatefulWidget {
   final String deviceName;
   final String brand;
   final String model;
   final String androidVersion;
   final String appVersion;
   final String createdAt;
+  final String expiresAt;
   final VoidCallback onApprove;
   final VoidCallback onReject;
 
@@ -280,12 +282,51 @@ class _DeviceRequestCard extends StatelessWidget {
     required this.androidVersion,
     required this.appVersion,
     required this.createdAt,
+    required this.expiresAt,
     required this.onApprove,
     required this.onReject,
   });
 
   @override
+  State<_DeviceRequestCard> createState() => _DeviceRequestCardState();
+}
+
+class _DeviceRequestCardState extends State<_DeviceRequestCard> {
+  Timer? _countdownTimer;
+  Duration _remaining = Duration.zero;
+
+  @override
+  void initState() {
+    super.initState();
+    _calculateRemaining();
+    _countdownTimer = Timer.periodic(const Duration(seconds: 1), (_) {
+      if (mounted) _calculateRemaining();
+    });
+  }
+
+  void _calculateRemaining() {
+    try {
+      final expiry = DateTime.parse(widget.expiresAt).toLocal();
+      final diff = expiry.difference(DateTime.now());
+      setState(() {
+        _remaining = diff.isNegative ? Duration.zero : diff;
+      });
+    } catch (_) {
+      _remaining = Duration.zero;
+    }
+  }
+
+  @override
+  void dispose() {
+    _countdownTimer?.cancel();
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
+    final minutes = _remaining.inMinutes.toString().padLeft(2, '0');
+    final seconds = (_remaining.inSeconds % 60).toString().padLeft(2, '0');
+    final isExpired = _remaining.inSeconds <= 0;
     return Container(
       margin: const EdgeInsets.only(bottom: 16),
       decoration: BoxDecoration(
@@ -323,7 +364,7 @@ class _DeviceRequestCard extends StatelessWidget {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
-                        deviceName,
+                        widget.deviceName,
                         style: const TextStyle(
                           color: Colors.white,
                           fontSize: 17,
@@ -331,7 +372,7 @@ class _DeviceRequestCard extends StatelessWidget {
                         ),
                       ),
                       Text(
-                        "$brand · Android $androidVersion",
+                        "${widget.brand} · Android ${widget.androidVersion}",
                         style: const TextStyle(
                           color: Colors.white70,
                           fontSize: 13,
@@ -367,16 +408,32 @@ class _DeviceRequestCard extends StatelessWidget {
             padding: const EdgeInsets.all(20),
             child: Column(
               children: [
-                _infoRow(Icons.phone_android, "Model", "$brand $model"),
+                _infoRow(Icons.phone_android, "Model", "${widget.brand} ${widget.model}"),
                 const SizedBox(height: 8),
-                _infoRow(Icons.system_update, "Android", androidVersion),
+                _infoRow(Icons.system_update, "Android", widget.androidVersion),
                 const SizedBox(height: 8),
-                _infoRow(Icons.apps, "App Version", "v$appVersion"),
+                _infoRow(Icons.apps, "App Version", "v${widget.appVersion}"),
                 const SizedBox(height: 8),
                 _infoRow(
                   Icons.access_time,
                   "Requested",
-                  _formatDate(createdAt),
+                  _formatDate(widget.createdAt),
+                ),
+                const SizedBox(height: 12),
+                Row(
+                  children: [
+                    const Icon(Icons.timer_outlined, size: 18, color: Colors.orange),
+                    const SizedBox(width: 10),
+                    const Text("Expires in: ", style: TextStyle(color: Colors.grey, fontSize: 14)),
+                    Text(
+                      isExpired ? "Expired" : "$minutes:$seconds",
+                      style: TextStyle(
+                        fontWeight: FontWeight.bold,
+                        fontSize: 14,
+                        color: isExpired ? Colors.red : Colors.orange,
+                      ),
+                    ),
+                  ],
                 ),
                 const SizedBox(height: 20),
 
@@ -386,7 +443,7 @@ class _DeviceRequestCard extends StatelessWidget {
                     // Reject
                     Expanded(
                       child: OutlinedButton.icon(
-                        onPressed: onReject,
+                        onPressed: widget.onReject,
                         icon: const Icon(Icons.block, size: 18),
                         label: const Text("Reject"),
                         style: OutlinedButton.styleFrom(
@@ -404,7 +461,7 @@ class _DeviceRequestCard extends StatelessWidget {
                     Expanded(
                       flex: 2,
                       child: ElevatedButton.icon(
-                        onPressed: onApprove,
+                        onPressed: isExpired ? null : widget.onApprove,
                         icon: const Icon(Icons.check_circle_outline, size: 18),
                         label: const Text("Approve"),
                         style: ElevatedButton.styleFrom(

@@ -496,8 +496,15 @@ class _DashboardScreenState extends State<DashboardScreen> {
                       Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
-                          Text("app_name".tr(),
-                              style: const TextStyle(color: Colors.white70, fontSize: 16, fontWeight: FontWeight.w500)),
+                          const Text(
+                            "Samvya",
+                            style: TextStyle(
+                              color: Colors.white70,
+                              fontSize: 16,
+                              fontWeight: FontWeight.w500,
+                              letterSpacing: 1.2,
+                            ),
+                          ),
                           GestureDetector(
                             onTap: () {
                               Navigator.push(context,
@@ -526,8 +533,8 @@ class _DashboardScreenState extends State<DashboardScreen> {
                 ),
 
                 // ─── Account Cards Slider ─────────────────────────────────────
-                Transform.translate(
-                  offset: const Offset(0, -20),
+                Padding(
+                  padding: const EdgeInsets.only(top: 16),
                   child: _accountsLoading
                       ? const SizedBox(
                           height: 160,
@@ -793,7 +800,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
                     ),
                   ),
 
-                const SizedBox(height: 40),
+                const SizedBox(height: 90),
               ],
             ),
           ),

@@ -1,14 +1,14 @@
-from fastapi import FastAPI
+from contextlib import asynccontextmanager
+
+from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
+from sqlalchemy import text
+from sqlalchemy.exc import SQLAlchemyError
 
 from app.database.database import Base, engine
 
-# Import ALL models so SQLAlchemy creates their tables in NeonDB
-from app.models.user import User
-from app.models.device import Device
-from app.models.login_request import LoginRequest
-from app.models.bank_account import BankAccount  # Ensures table creation
-from app.models.transaction import Transaction     # Ensures table creation
+# Import every model before create_all so related and scheme tables are registered.
+from app import models
 
 # Import routers
 from app.routes.auth import router as auth_router
@@ -20,16 +20,26 @@ from app.routes.scheme_assistant import router as scheme_assistant_router
 from app.routes.bank_accounts import router as bank_accounts_router
 from app.routes.transactions import router as transactions_router
 
-# Create all tables in NeonDB (safe — never drops existing data)
-Base.metadata.create_all(bind=engine)
+@asynccontextmanager
+async def lifespan(app: FastAPI):
+    try:
+        with engine.begin() as connection:
+            connection.execute(text("SELECT 1"))
+            Base.metadata.create_all(bind=connection)
+    except SQLAlchemyError as exc:
+        raise RuntimeError(
+            "Database connection or schema initialization failed. Check DATABASE_URL "
+            "and confirm the database is reachable."
+        ) from exc
+    yield
 
 app = FastAPI(
     title="Samvya API",
     description="Rural Banking Platform — Samvya Backend",
-    version="1.0.0"
+    version="1.0.0",
+    lifespan=lifespan,
 )
 
-# ─── CORS ──────────────────────────────────────────────────────────────────────
 # Allows Flutter app (any origin) to call this backend
 app.add_middleware(
     CORSMiddleware,
@@ -62,4 +72,9 @@ def home():
 
 @app.get("/health")
 def health_check():
-    return {"status": "ok"}
+    try:
+        with engine.connect() as connection:
+            connection.execute(text("SELECT 1"))
+        return {"status": "ok", "database": "connected"}
+    except SQLAlchemyError as exc:
+        raise HTTPException(status_code=503, detail="Database is unavailable.") from exc

@@ -5,9 +5,6 @@ import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class ApiService {
-  // ===========================
-  // CHANGE YOUR IP HERE
-  // ===========================
 
   static const String baseUrl = "http://192.168.17.253:8000";
 
@@ -47,10 +44,7 @@ class ApiService {
   Future<SharedPreferences> _getPrefs() async {
     return await SharedPreferences.getInstance();
   }
-
-  // ===========================
   // REGISTER
-  // ===========================
 
   Future<Map<String, dynamic>> register(Map<String, dynamic> data) async {
     try {

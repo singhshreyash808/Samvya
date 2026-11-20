@@ -4,7 +4,9 @@ import 'package:easy_localization/easy_localization.dart';
 import '../../services/local_storage_service.dart';
 import '../auth/register_screen.dart';
 import '../auth/login_screen.dart';
+import '../auth/link_device_screen.dart';
 import '../mpin/verify_mpin_screen.dart';
+import '../mpin/create_mpin_screen.dart';
 import '../profile/language_screen.dart';
 
 class WelcomeScreen extends StatefulWidget {
@@ -26,6 +28,8 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
 
   Future<void> _checkRegistration() async {
     bool registered = await LocalStorageService.isRegistered();
+    String? savedMpin = await LocalStorageService.getMPIN();
+    
     if (!mounted) return;
     setState(() {
       _isLocallyRegistered = registered;
@@ -34,12 +38,21 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
 
     // If already registered on this device, skip welcome screen and go straight to Verify MPIN
     if (registered) {
-      Navigator.pushReplacement(
-        context,
-        MaterialPageRoute(
-          builder: (_) => const VerifyMpinScreen(),
-        ),
-      );
+      if (savedMpin == null) {
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(
+            builder: (_) => CreateMpinScreen(),
+          ),
+        );
+      } else {
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(
+            builder: (_) => const VerifyMpinScreen(),
+          ),
+        );
+      }
     }
   }
 
@@ -221,6 +234,38 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
                         ),
                         child: Text(
                           "welcome.login".tr(),
+                          style: TextStyle(
+                            fontWeight: FontWeight.bold,
+                            fontSize: 16,
+                            letterSpacing: 0.5,
+                          ),
+                        ),
+                      ),
+                    ),
+                    const SizedBox(height: 16),
+                    
+                    // Link Device Button
+                    SizedBox(
+                      width: double.infinity,
+                      height: 56,
+                      child: OutlinedButton(
+                        onPressed: () {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (_) => const LinkDeviceScreen(),
+                            ),
+                          );
+                        },
+                        style: OutlinedButton.styleFrom(
+                          foregroundColor: Colors.white,
+                          side: const BorderSide(color: Colors.white70, width: 2),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(16),
+                          ),
+                        ),
+                        child: const Text(
+                          "Link New Device",
                           style: TextStyle(
                             fontWeight: FontWeight.bold,
                             fontSize: 16,

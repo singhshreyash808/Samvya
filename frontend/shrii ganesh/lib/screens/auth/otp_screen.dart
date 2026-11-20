@@ -44,7 +44,7 @@ class OtpScreen extends StatelessWidget {
                 Navigator.pushReplacement(
                   context,
                   MaterialPageRoute(
-                    builder: (_) => const CreateMpinScreen(),
+                    builder: (_) => CreateMpinScreen(),
                   ),
                 );
               },

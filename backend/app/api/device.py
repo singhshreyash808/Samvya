@@ -26,6 +26,7 @@ class PendingDeviceResponse(BaseModel):
     android_version: str
     app_version: str
     created_at: str
+    expires_at: str
 
     class Config:
         from_attributes = True
@@ -71,18 +72,28 @@ def get_pending_devices(
     from datetime import datetime, timezone
 
     # Get all pending login requests for this user
-    pending_requests = (
+    all_requests = (
         db.query(LoginRequest, Device)
         .join(Device, LoginRequest.device_id == Device.id)
         .filter(
             LoginRequest.user_id == user.id,
             LoginRequest.approved == False,
-            LoginRequest.rejected == False,
-            LoginRequest.expires_at > datetime.now(timezone.utc)
+            LoginRequest.rejected == False
         )
         .order_by(LoginRequest.created_at.desc())
         .all()
     )
+    
+    pending_requests = []
+    now_utc = datetime.now(timezone.utc)
+    for req, device in all_requests:
+        # SQLite stores datetimes awkwardly, safely compare in Python
+        if req.expires_at:
+            expiry = req.expires_at
+            if expiry.tzinfo is None:
+                expiry = expiry.replace(tzinfo=timezone.utc)
+            if expiry > now_utc:
+                pending_requests.append((req, device))
 
     result = []
     for req, device in pending_requests:
@@ -95,6 +106,7 @@ def get_pending_devices(
             "android_version": device.android_version,
             "app_version": device.app_version,
             "created_at": str(req.created_at),
+            "expires_at": str(req.expires_at),
         })
 
     return {
