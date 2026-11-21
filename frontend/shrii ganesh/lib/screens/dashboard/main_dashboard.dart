@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:easy_localization/easy_localization.dart';
-
 import 'dashboard_screen.dart';
 import 'money_screen.dart';
 import 'scan_screen.dart';
@@ -12,6 +11,7 @@ import '../mpin/verify_mpin_screen.dart';
 import '../../services/bank_account_service.dart';
 import 'qr_scan_screen.dart';
 import 'transfer_money_screen.dart';
+
 class MainDashboard extends StatefulWidget {
   const MainDashboard({super.key});
 
@@ -65,7 +65,7 @@ class _MainDashboardState extends State<MainDashboard> {
         },
         child: Scaffold(
           body: pages[currentIndex],
-          
+
           floatingActionButton: FloatingActionButton(
             onPressed: () {
               VoiceAssistantOverlay.show(
@@ -91,18 +91,19 @@ class _MainDashboardState extends State<MainDashboard> {
                   context,
                   MaterialPageRoute(builder: (_) => const QRScanScreen()),
                 );
-                
+
                 if (scannedCode != null && scannedCode is String && mounted) {
                   final accounts = await BankAccountService().getAccounts();
                   if (accounts.isNotEmpty && mounted) {
                     String recipientAccount = scannedCode;
                     String recipientName = "";
                     if (scannedCode.startsWith("upi://pay")) {
-                       final uri = Uri.tryParse(scannedCode);
-                       if (uri != null) {
-                          recipientAccount = uri.queryParameters['pa'] ?? scannedCode;
-                          recipientName = uri.queryParameters['pn'] ?? "";
-                       }
+                      final uri = Uri.tryParse(scannedCode);
+                      if (uri != null) {
+                        recipientAccount =
+                            uri.queryParameters['pa'] ?? scannedCode;
+                        recipientName = uri.queryParameters['pn'] ?? "";
+                      }
                     }
                     Navigator.push(
                       context,
@@ -116,13 +117,16 @@ class _MainDashboardState extends State<MainDashboard> {
                     );
                   } else if (mounted) {
                     ScaffoldMessenger.of(context).showSnackBar(
-                      const SnackBar(content: Text("Please link a bank account first."), backgroundColor: Colors.orange),
+                      const SnackBar(
+                        content: Text("Please link a bank account first."),
+                        backgroundColor: Colors.orange,
+                      ),
                     );
                   }
                 }
                 return;
               }
-              
+
               setState(() {
                 currentIndex = index;
               });
@@ -138,9 +142,7 @@ class _MainDashboardState extends State<MainDashboard> {
               fontWeight: FontWeight.bold,
               fontSize: 12,
             ),
-            unselectedLabelStyle: const TextStyle(
-              fontSize: 12,
-            ),
+            unselectedLabelStyle: const TextStyle(fontSize: 12),
 
             items: [
               BottomNavigationBarItem(
