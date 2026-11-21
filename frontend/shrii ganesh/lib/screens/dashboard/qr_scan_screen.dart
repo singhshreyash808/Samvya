@@ -5,6 +5,9 @@ import 'package:easy_localization/easy_localization.dart';
 class QRScanScreen extends StatefulWidget {
   const QRScanScreen({super.key});
 
+
+  
+
   @override
   State<QRScanScreen> createState() => _QRScanScreenState();
 }
