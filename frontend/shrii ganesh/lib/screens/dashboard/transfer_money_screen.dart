@@ -72,6 +72,7 @@ class _TransferMoneyScreenState extends State<TransferMoneyScreen> {
     // Call API
     final result = await _transactionService.createTransaction(
       senderAccountId: widget.senderAccount.id,
+
       recipientName: _recipientNameCtrl.text.trim(),
       recipientAccountNumber: _recipientAccountCtrl.text.trim(),
       amount: amount,
