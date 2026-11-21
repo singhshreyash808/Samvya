@@ -9,10 +9,15 @@ class MoneyScreen extends StatelessWidget {
     return Scaffold(
       backgroundColor: const Color(0xFFF5F7FA),
       appBar: AppBar(
-        title: const Text("All Transactions", style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
+        title: const Text(
+          "All Transactions",
+          style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
+        ),
         backgroundColor: const Color(0xFF0F9D8A),
         elevation: 0,
-        automaticallyImplyLeading: false, // It's a bottom nav tab
+        automaticallyImplyLeading: false,
+
+        // It's a bottom nav tab
       ),
       body: const SafeArea(
         child: SingleChildScrollView(
