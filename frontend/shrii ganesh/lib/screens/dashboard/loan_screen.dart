@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-
 class LoanScreen extends StatelessWidget {
   const LoanScreen({super.key});
 
