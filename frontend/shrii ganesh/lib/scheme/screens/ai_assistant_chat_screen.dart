@@ -143,12 +143,7 @@ class _AiAssistantChatScreenState extends State<AiAssistantChatScreen> {
       child: SafeArea(
         child: Row(
           children: [
-            IconButton(
-              icon: const Icon(Icons.mic, color: Color(0xFF006B5F)),
-              onPressed: () {
-                // Future integration: Voice to text
-              },
-            ),
+            // Removed mic icon as requested by user
             Expanded(
               child: TextField(
                 controller: _messageController,

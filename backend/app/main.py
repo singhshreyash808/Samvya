@@ -1,14 +1,15 @@
-from fastapi import FastAPI
+
+from contextlib import asynccontextmanager
+
+from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
+from sqlalchemy import text
+from sqlalchemy.exc import SQLAlchemyError
 
 from app.database.database import Base, engine
 
-# Import ALL models so SQLAlchemy creates their tables in PostgreSQL
-from app.models import (
-    User, UserProfile, Device, LoginRequest, BankAccount, Transaction,
-    SchemeCategory, GovernmentScheme, SchemeEligibilityRules, UserBookmark,
-    Admin, Complaint, ComplaintComment, ServiceRequest, RiskEvent, SecurityEvent, AuditLog
-)
+# Import all models before creating database tables
+from app import models
 
 # Import routers
 from app.routes.auth import router as auth_router
@@ -21,16 +22,29 @@ from app.routes.bank_accounts import router as bank_accounts_router
 from app.routes.transactions import router as transactions_router
 from app.routes.admin import router as admin_router
 
-# Create all tables in PostgreSQL
-Base.metadata.create_all(bind=engine)
+
+@asynccontextmanager
+async def lifespan(app: FastAPI):
+    try:
+        with engine.begin() as connection:
+            connection.execute(text("SELECT 1"))
+            Base.metadata.create_all(bind=connection)
+    except SQLAlchemyError as exc:
+        raise RuntimeError(
+            "Database connection or schema initialization failed. "
+            "Check DATABASE_URL and confirm the database is reachable."
+        ) from exc
+    yield
+
 
 app = FastAPI(
     title="Samvya API",
-    description="Rural Banking Platform — Samvya Backend & Admin Portal API",
-    version="1.0.0"
+    description="Rural Banking Platform - Samvya Backend & Admin Portal API",
+    version="1.0.0",
+    lifespan=lifespan,
 )
 
-# ─── CORS ──────────────────────────────────────────────────────────────────────
+# CORS configuration
 app.add_middleware(
     CORSMiddleware,
     allow_origins=["*"],
@@ -39,7 +53,7 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-# ─── Routers ───────────────────────────────────────────────────────────────────
+# Register routers
 app.include_router(auth_router)
 app.include_router(device_router)
 app.include_router(assistant_router)
@@ -50,15 +64,24 @@ app.include_router(bank_accounts_router)
 app.include_router(transactions_router)
 app.include_router(admin_router)
 
-# ─── Health Check ──────────────────────────────────────────────────────────────
+
 @app.get("/")
 def home():
     return {
-        "message": "Samvya Backend & Admin Portal API Running 🚀",
+        "message": "Samvya Backend & Admin Portal API Running",
         "status": "healthy",
         "version": "1.0.0"
     }
 
+
 @app.get("/health")
 def health_check():
-    return {"status": "ok"}
+    try:
+        with engine.connect() as connection:
+            connection.execute(text("SELECT 1"))
+        return {"status": "ok", "database": "connected"}
+    except SQLAlchemyError as exc:
+        raise HTTPException(
+            status_code=503,
+            detail="Database is unavailable."
+        ) from exc

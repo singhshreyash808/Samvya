@@ -5,6 +5,8 @@ import 'package:samvya/screens/dashboard/main_dashboard.dart';
 
 import '../../services/api_service.dart';
 import '../../services/device_service.dart';
+import '../../services/local_storage_service.dart';
+import '../mpin/create_mpin_screen.dart';
 import 'register_screen.dart';
 import 'waiting_for_approval_screen.dart';
 
@@ -132,16 +134,22 @@ class _LoginScreenState extends State<LoginScreen> {
                       });
                       setState(() => _isLoading = false);
                       if (!mounted) return;
-                      if (response["success"] == true) {
-                        if (response["is_primary"] == true) {
-                          Navigator.pushReplacement(context, MaterialPageRoute(builder: (_) => const MainDashboard()));
-                        } else {
-                          Navigator.pushReplacement(context, MaterialPageRoute(builder: (_) => const VerifyMpinScreen()));
-                        }
+                      if (response["device_status"] == "pending") {
+                        ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text("Unrecognized device. Please use 'Link New Device' from the welcome screen.")));
                         return;
                       }
-                      if (response["device_status"] == "pending") {
-                        Navigator.push(context, MaterialPageRoute(builder: (_) => WaitingForApprovalScreen(requestId: response["request_id"])));
+                      
+                      if (response["success"] == true) {
+                        String? savedMpin = await LocalStorageService.getMPIN();
+                        if (savedMpin == null) {
+                          Navigator.pushReplacement(context, MaterialPageRoute(builder: (_) => CreateMpinScreen()));
+                        } else {
+                          if (response["is_primary"] == true) {
+                            Navigator.pushReplacement(context, MaterialPageRoute(builder: (_) => const MainDashboard()));
+                          } else {
+                            Navigator.pushReplacement(context, MaterialPageRoute(builder: (_) => const VerifyMpinScreen()));
+                          }
+                        }
                         return;
                       }
                       ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(response["message"] ?? "Login Failed")));

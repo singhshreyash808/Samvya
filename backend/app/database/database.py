@@ -1,58 +1,54 @@
-from sqlalchemy import create_engine
-from sqlalchemy.orm import sessionmaker, declarative_base
-from dotenv import load_dotenv
 import os
-from urllib.parse import urlparse, urlencode, parse_qs, urlunparse
+from pathlib import Path
+from urllib.parse import parse_qsl, urlencode, urlsplit, urlunsplit
 
-load_dotenv()
+from dotenv import load_dotenv
+from sqlalchemy import create_engine
+from sqlalchemy.orm import declarative_base, sessionmaker
 
-DATABASE_URL = os.getenv("DATABASE_URL")
+
+load_dotenv(Path(__file__).resolve().parents[2] / ".env")
+
+DATABASE_URL = os.getenv("DATABASE_URL", "").strip()
+if not DATABASE_URL:
+    raise RuntimeError(
+        "DATABASE_URL is not configured. Add it to backend/.env before starting the API."
+    )
 
 
-def _clean_database_url(url: str) -> str:
-    """
-    Remove parameters unsupported by psycopg2 (e.g. channel_binding)
-    and ensure sslmode=require is present.
-    """
-    parsed = urlparse(url)
-    params = parse_qs(parsed.query, keep_blank_values=True)
+def _normalize_database_url(url: str) -> str:
+    """Normalize provider URLs and remove options unsupported by psycopg2."""
+    if url.startswith("postgres://"):
+        url = "postgresql://" + url[len("postgres://") :]
 
-    # Remove channel_binding — psycopg2 doesn't support it and it breaks SSL
-    params.pop("channel_binding", None)
+    parsed = urlsplit(url)
+    if parsed.scheme not in {"postgresql", "postgresql+psycopg2"}:
+        return url
 
-    # Ensure sslmode is set to require
-    params["sslmode"] = ["require"]
+    query = [(key, value) for key, value in parse_qsl(parsed.query, keep_blank_values=True)
+             if key != "channel_binding"]
+    if not any(key == "sslmode" for key, _ in query):
+        query.append(("sslmode", "require"))
 
-    new_query = urlencode({k: v[0] for k, v in params.items()})
-    cleaned = urlunparse((
+    return urlunsplit((
         parsed.scheme,
         parsed.netloc,
         parsed.path,
-        parsed.params,
-        new_query,
-        parsed.fragment
+        urlencode(query),
+        parsed.fragment,
     ))
-    return cleaned
 
 
-_db_url = _clean_database_url(DATABASE_URL)
+DATABASE_URL = _normalize_database_url(DATABASE_URL)
+_is_sqlite = DATABASE_URL.startswith("sqlite:")
+_engine_options = {"pool_pre_ping": True}
+if _is_sqlite:
+    _engine_options["connect_args"] = {"check_same_thread": False}
+else:
+    _engine_options.update(pool_size=5, max_overflow=10, pool_timeout=30, pool_recycle=300)
 
-# NeonDB serverless pooler — use conservative pool settings
-engine = create_engine(
-    _db_url,
-    pool_pre_ping=True,      # Test connection before use
-    pool_size=5,
-    max_overflow=10,
-    pool_timeout=30,
-    pool_recycle=300,        # Recycle connections every 5 min
-)
-
-SessionLocal = sessionmaker(
-    autocommit=False,
-    autoflush=False,
-    bind=engine
-)
-
+engine = create_engine(DATABASE_URL, **_engine_options)
+SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
 Base = declarative_base()
 
 

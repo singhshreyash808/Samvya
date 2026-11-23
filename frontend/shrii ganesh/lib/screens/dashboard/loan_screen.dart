@@ -5,17 +5,13 @@ class LoanScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-
     return Scaffold(
-      appBar: AppBar(
-        title: const Text("Loans"),
-      ),
+      appBar: AppBar(title: const Text("Loans")),
 
       body: ListView(
         padding: const EdgeInsets.all(20),
 
         children: const [
-
           Card(
             child: ListTile(
               title: Text("KCC Loan"),

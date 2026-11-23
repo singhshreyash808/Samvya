@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:easy_localization/easy_localization.dart';
 import '../../services/local_storage_service.dart';
+
 import 'verify_profile_mpin_screen.dart';
 import 'edit_profile_screen.dart';
-
 
 class MyProfileScreen extends StatefulWidget {
   const MyProfileScreen({super.key});
@@ -13,7 +13,6 @@ class MyProfileScreen extends StatefulWidget {
 }
 
 class _MyProfileScreenState extends State<MyProfileScreen> {
-
   String fullName = "";
   String email = "";
   String mobile = "";
@@ -32,7 +31,6 @@ class _MyProfileScreenState extends State<MyProfileScreen> {
   }
 
   Future<void> loadProfile() async {
-
     fullName = await LocalStorageService.getName();
 
     email = await LocalStorageService.getEmail();
@@ -49,30 +47,19 @@ class _MyProfileScreenState extends State<MyProfileScreen> {
 
     pinCode = await LocalStorageService.getPinCode();
 
-    accountNumber =
-    await LocalStorageService.getAccountNumber();
+    accountNumber = await LocalStorageService.getAccountNumber();
 
-    balance =
-    await LocalStorageService.getBalance();
+    balance = await LocalStorageService.getBalance();
 
     setState(() {});
   }
 
-  Widget buildTile(
-      IconData icon,
-      String title,
-      String value,
-      ) {
+  Widget buildTile(IconData icon, String title, String value) {
     return Card(
       elevation: 2,
-      margin: const EdgeInsets.symmetric(
-        vertical: 6,
-      ),
+      margin: const EdgeInsets.symmetric(vertical: 6),
       child: ListTile(
-        leading: Icon(
-          icon,
-          color: const Color(0xff0F9D8A),
-        ),
+        leading: Icon(icon, color: const Color(0xff0F9D8A)),
         title: Text(title),
         subtitle: Text(value),
       ),
@@ -81,9 +68,7 @@ class _MyProfileScreenState extends State<MyProfileScreen> {
 
   @override
   Widget build(BuildContext context) {
-
     return Scaffold(
-
       backgroundColor: Colors.grey.shade100,
 
       appBar: AppBar(
@@ -118,24 +103,16 @@ class _MyProfileScreenState extends State<MyProfileScreen> {
       ),
 
       body: SingleChildScrollView(
-
         padding: const EdgeInsets.all(16),
 
         child: Column(
-
           children: [
-
             CircleAvatar(
               radius: 55,
               backgroundColor: const Color(0xff0F9D8A),
               child: Text(
-                fullName.isEmpty
-                    ? "U"
-                    : fullName[0].toUpperCase(),
-                style: const TextStyle(
-                  fontSize: 40,
-                  color: Colors.white,
-                ),
+                fullName.isEmpty ? "U" : fullName[0].toUpperCase(),
+                style: const TextStyle(fontSize: 40, color: Colors.white),
               ),
             ),
 
@@ -143,74 +120,30 @@ class _MyProfileScreenState extends State<MyProfileScreen> {
 
             Text(
               fullName,
-              style: const TextStyle(
-                fontSize: 24,
-                fontWeight: FontWeight.bold,
-              ),
+              style: const TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
             ),
 
-            Text(
-              email,
-              style: const TextStyle(
-                color: Colors.grey,
-              ),
-            ),
+            Text(email, style: const TextStyle(color: Colors.grey)),
 
             const SizedBox(height: 20),
 
-            buildTile(
-              Icons.person,
-              "Full Name",
-              fullName,
-            ),
+            buildTile(Icons.person, "Full Name", fullName),
 
-            buildTile(
-              Icons.phone,
-              "Mobile Number",
-              mobile,
-            ),
+            buildTile(Icons.phone, "Mobile Number", mobile),
 
-            buildTile(
-              Icons.email,
-              "Email",
-              email,
-            ),
+            buildTile(Icons.email, "Email", email),
 
-            buildTile(
-              Icons.location_on,
-              "Address",
-              address,
-            ),
+            buildTile(Icons.location_on, "Address", address),
 
-            buildTile(
-              Icons.home,
-              "Village",
-              village,
-            ),
+            buildTile(Icons.home, "Village", village),
 
-            buildTile(
-              Icons.location_city,
-              "District",
-              district,
-            ),
+            buildTile(Icons.location_city, "District", district),
 
-            buildTile(
-              Icons.map,
-              "State",
-              state,
-            ),
+            buildTile(Icons.map, "State", state),
 
-            buildTile(
-              Icons.pin_drop,
-              "PIN Code",
-              pinCode,
-            ),
+            buildTile(Icons.pin_drop, "PIN Code", pinCode),
 
-            buildTile(
-              Icons.account_balance,
-              "Account Number",
-              accountNumber,
-            ),
+            buildTile(Icons.account_balance, "Account Number", accountNumber),
 
             buildTile(
               Icons.currency_rupee,
@@ -218,49 +151,36 @@ class _MyProfileScreenState extends State<MyProfileScreen> {
               "₹ ${balance.toStringAsFixed(2)}",
             ),
 
-            buildTile(
-              Icons.verified,
-              "KYC Status",
-              "Verified",
-            ),
+            buildTile(Icons.verified, "KYC Status", "Verified"),
 
             const SizedBox(height: 30),
 
             SizedBox(
-
               width: double.infinity,
               height: 55,
 
               child: ElevatedButton.icon(
-
                 style: ElevatedButton.styleFrom(
-                  backgroundColor:
-                  const Color(0xff0F9D8A),
+                  backgroundColor: const Color(0xff0F9D8A),
                 ),
 
                 icon: const Icon(Icons.edit),
 
                 label: const Text(
                   "Edit Profile",
-                  style: TextStyle(
-                    fontSize: 18,
-                    color: Colors.white,
-                  ),
+                  style: TextStyle(fontSize: 18, color: Colors.white),
                 ),
 
                 onPressed: () {
-
                   Navigator.push(
                     context,
                     MaterialPageRoute(
-                      builder: (_) =>
-                      const VerifyProfileMpinScreen(),
+                      builder: (_) => const VerifyProfileMpinScreen(),
                     ),
                   );
                 },
               ),
             ),
-
           ],
         ),
       ),

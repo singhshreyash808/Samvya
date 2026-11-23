@@ -6,6 +6,7 @@ import '../dashboard/main_dashboard.dart';
 import 'package:easy_localization/easy_localization.dart';
 import '../../services/voice_assistant_service.dart';
 import 'face_verify_screen.dart';
+import 'create_mpin_screen.dart';
 
 class VerifyMpinScreen extends StatefulWidget {
   const VerifyMpinScreen({super.key});
@@ -93,6 +94,15 @@ class _VerifyMpinScreenState extends State<VerifyMpinScreen> {
     }
 
     String? savedMpin = await LocalStorageService.getMPIN();
+
+    if (savedMpin == null) {
+      if (!mounted) return;
+      Navigator.pushReplacement(
+        context,
+        MaterialPageRoute(builder: (_) => CreateMpinScreen()),
+      );
+      return;
+    }
 
     if (savedMpin == mpinController.text.trim()) {
       await LocalStorageService.resetFailedAttempts();

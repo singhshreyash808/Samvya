@@ -9,13 +9,16 @@ Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await EasyLocalization.ensureInitialized();
 
-  await Firebase.initializeApp(
-    options: DefaultFirebaseOptions.currentPlatform,
-  );
+  await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
 
   runApp(
     EasyLocalization(
-      supportedLocales: const [Locale('en'), Locale('hi'), Locale('or'), Locale('ta')],
+      supportedLocales: const [
+        Locale('en'),
+        Locale('hi'),
+        Locale('or'),
+        Locale('ta'),
+      ],
       path: 'assets/translations',
       fallbackLocale: const Locale('en'),
       child: const SamvyaApp(),

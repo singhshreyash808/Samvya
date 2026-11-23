@@ -1,10 +1,21 @@
 import re
+import os
+import google.generativeai as genai
 from typing import Dict, List
+from dotenv import load_dotenv
+
+load_dotenv()
 
 class AIAssistant:
     def __init__(self):
+        self.api_key = os.getenv("ASSISTANT_API_KEY")
+        if self.api_key:
+            genai.configure(api_key=self.api_key)
+            self.model = genai.GenerativeModel('gemini-3.5-flash')
+        else:
+            self.model = None
+
         # Basic hardcoded intent matching for rural use cases.
-        # Ideally, this would connect to an LLM like Gemini or OpenAI.
         self.intent_map = {
             "pension": ["pension", "old age", "widow", "senior citizen"],
             "housing": ["house", "housing", "awas", "home", "building"],
@@ -45,8 +56,32 @@ class AIAssistant:
 
     def generate_response(self, query: str, matched_schemes: List[dict]) -> str:
         """
-        Generates a human-friendly response based on matched schemes.
+        Generates a human-friendly response using Gemini AI if available.
         """
+        if self.model:
+            schemes_text = "\n".join([f"- {s['name']}: {s['description']}" for s in matched_schemes])
+            
+            prompt = f"""
+You are Samvya, a helpful AI assistant for a government schemes and rural banking application.
+The user asked: "{query}"
+
+We have found these relevant schemes in our database that match their tags (if any):
+{schemes_text if schemes_text else "None"}
+
+Please answer the user's query naturally, politely, and concisely. 
+If they just said a greeting like "hello", just say hello back and ask how you can help them find schemes today.
+If they asked a specific question and we provided schemes, summarize how those schemes can help them. 
+If no schemes matched, ask them for more details like their occupation, age, or state so you can help them better.
+"""
+            try:
+                response = self.model.generate_content(prompt)
+                return response.text.strip()
+            except Exception as e:
+                print(f"Gemini API Error: {e}")
+                # Fallback to hardcoded if API fails
+                pass
+
+        # Fallback if no model or if API failed
         if not matched_schemes:
             return "I couldn't find specific schemes for your query. Try browsing our categories or give me more details like your occupation."
             
