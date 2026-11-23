@@ -1,0 +1,299 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SAMVYA - Admin Portal</title>
+    <!-- Google Fonts & FontAwesome Icons -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+    <div class="app-container">
+        <!-- Sidebar Navigation -->
+        <aside class="sidebar">
+            <div class="brand-box">
+                <i class="fa-solid fa-building-columns brand-icon"></i>
+                <div class="brand-text">
+                    <h2>SAMVYA</h2>
+                    <span>Admin Portal</span>
+                </div>
+            </div>
+
+            <ul class="nav-menu">
+                <li class="nav-item active" data-target="dashboard">
+                    <a href="#"><i class="fa-solid fa-chart-pie"></i> Dashboard</a>
+                </li>
+                <li class="nav-item" data-target="users">
+                    <a href="#"><i class="fa-solid fa-users"></i> Users</a>
+                </li>
+                <li class="nav-item" data-target="transactions">
+                    <a href="#"><i class="fa-solid fa-right-left"></i> Transactions</a>
+                </li>
+                <li class="nav-item" data-target="complaints">
+                    <a href="#"><i class="fa-solid fa-comments"></i> Complaints & Requests</a>
+                </li>
+                <li class="nav-item" data-target="security">
+                    <a href="#"><i class="fa-solid fa-shield-halved"></i> Risk & Security</a>
+                </li>
+                <li class="nav-item" data-target="audit">
+                    <a href="#"><i class="fa-solid fa-clipboard-list"></i> Audit Logs</a>
+                </li>
+                <li class="nav-item" data-target="reports">
+                    <a href="#"><i class="fa-solid fa-chart-line"></i> Reports & Analytics</a>
+                </li>
+                <li class="nav-item" data-target="admin-mgmt">
+                    <a href="#"><i class="fa-solid fa-user-gear"></i> Admin Management</a>
+                </li>
+                <li class="nav-item" data-target="settings">
+                    <a href="#"><i class="fa-solid fa-gear"></i> System Settings</a>
+                </li>
+            </ul>
+
+            <div class="sidebar-footer">
+                <a href="#" id="logout-btn"><i class="fa-solid fa-right-from-bracket"></i> Logout</a>
+            </div>
+        </aside>
+
+        <!-- Main Content Wrapper -->
+        <main class="main-content">
+            <!-- Top Header Bar -->
+            <header class="top-header">
+                <div class="search-bar">
+                    <i class="fa-solid fa-magnifying-glass"></i>
+                    <input type="text" placeholder="Search users, transactions, complaints...">
+                </div>
+                <div class="header-right">
+                    <div class="notification-bell">
+                        <i class="fa-regular fa-bell"></i>
+                        <span class="badge-dot"></span>
+                    </div>
+                    <div class="user-profile">
+                        <div class="avatar">A</div>
+                        <div class="user-meta">
+                            <h4>Admin User</h4>
+                            <span>Super Admin</span>
+                        </div>
+                    </div>
+                </div>
+            </header>
+
+            <!-- Dynamic Views Container -->
+            <div class="content-body">
+
+                <!-- 1. DASHBOARD VIEW -->
+                <section id="dashboard" class="view-section active">
+                    <div class="section-header">
+                        <h2>Dashboard</h2>
+                        <span class="date-badge"><i class="fa-regular fa-calendar"></i> Today 25 Apr 2025</span>
+                    </div>
+                    <p class="subtitle">Overview of SAMVYA platform</p>
+
+                    <!-- Stat Cards Grid -->
+                    <div class="stats-grid">
+                        <div class="stat-card">
+                            <div class="stat-icon purple"><i class="fa-solid fa-users"></i></div>
+                            <div class="stat-details">
+                                <h3>12,482</h3>
+                                <p>Total Users</p>
+                            </div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-icon green"><i class="fa-solid fa-user-check"></i></div>
+                            <div class="stat-details">
+                                <h3>1,024</h3>
+                                <p>Active Users <small>(last 7 days)</small></p>
+                            </div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-icon blue"><i class="fa-solid fa-arrow-right-arrow-left"></i></div>
+                            <div class="stat-details">
+                                <h3>3,529</h3>
+                                <p>Transactions Today</p>
+                            </div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-icon red"><i class="fa-solid fa-triangle-exclamation"></i></div>
+                            <div class="stat-details">
+                                <h3>12</h3>
+                                <p>High Risk Alerts</p>
+                            </div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-icon orange"><i class="fa-solid fa-comments"></i></div>
+                            <div class="stat-details">
+                                <h3>48</h3>
+                                <p>Open Complaints</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Visual Layout Grid -->
+                    <div class="dashboard-grid">
+                        <div class="card wide-card">
+                            <div class="card-title">
+                                <h4>Transaction Trend (Last 7 Days)</h4>
+                            </div>
+                            <div class="mock-chart-container">
+                                <div class="line-chart-mock"></div>
+                                <div class="chart-labels">
+                                    <span>Apr 19</span><span>Apr 20</span><span>Apr 21</span><span>Apr 22</span><span>Apr 23</span><span>Apr 24</span><span>Apr 25</span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="card narrow-card">
+                            <div class="card-title">
+                                <h4>Transaction Risk Distribution</h4>
+                            </div>
+                            <div class="donut-chart-mock">
+                                <div class="donut-ring"></div>
+                                <div class="donut-legend">
+                                    <div><span class="dot low"></span> Low Risk <strong>72%</strong></div>
+                                    <div><span class="dot medium"></span> Medium Risk <strong>20%</strong></div>
+                                    <div><span class="dot high"></span> High Risk <strong>8%</strong></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- 2. USERS VIEW -->
+                <section id="users" class="view-section">
+                    <div class="section-header">
+                        <h2>User Management</h2>
+                    </div>
+                    <div class="card full-card">
+                        <div class="table-toolbar">
+                            <input type="text" placeholder="Search by name, ID, mobile...">
+                            <button class="btn-filter">Filter <i class="fa-solid fa-chevron-down"></i></button>
+                        </div>
+                        <table class="data-table">
+                            <thead>
+                                <tr>
+                                    <th>User ID</th>
+                                    <th>Name</th>
+                                    <th>Status</th>
+                                    <th>Risk Level</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>U1001</td>
+                                    <td>Ramesh Kumar</td>
+                                    <td><span class="badge active">Active</span></td>
+                                    <td><span class="badge low">Low</span></td>
+                                    <td><button class="btn-view">View</button></td>
+                                </tr>
+                                <tr>
+                                    <td>U1002</td>
+                                    <td>Sita Devi</td>
+                                    <td><span class="badge active">Active</span></td>
+                                    <td><span class="badge medium">Medium</span></td>
+                                    <td><button class="btn-view">View</button></td>
+                                </tr>
+                                <tr>
+                                    <td>U1003</td>
+                                    <td>Mohan Lal</td>
+                                    <td><span class="badge blocked">Blocked</span></td>
+                                    <td><span class="badge high">High</span></td>
+                                    <td><button class="btn-view">View</button></td>
+                                </tr>
+                                <tr>
+                                    <td>U1004</td>
+                                    <td>Priya Sharma</td>
+                                    <td><span class="badge active">Active</span></td>
+                                    <td><span class="badge low">Low</span></td>
+                                    <td><button class="btn-view">View</button></td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </section>
+
+                <!-- 3. TRANSACTIONS VIEW -->
+                <section id="transactions" class="view-section">
+                    <div class="section-header">
+                        <h2>Transaction Management</h2>
+                    </div>
+                    <div class="card full-card">
+                        <div class="table-toolbar">
+                            <input type="text" placeholder="Search by transaction ID, user, amount...">
+                            <button class="btn-filter">Filter <i class="fa-solid fa-chevron-down"></i></button>
+                        </div>
+                        <table class="data-table">
+                            <thead>
+                                <tr>
+                                    <th>TXN ID</th>
+                                    <th>User</th>
+                                    <th>Amount</th>
+                                    <th>Type</th>
+                                    <th>Risk</th>
+                                    <th>Status</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>TXN92831</td>
+                                    <td>U1042</td>
+                                    <td>₹5,000</td>
+                                    <td>Transfer</td>
+                                    <td><span class="badge high">High</span></td>
+                                    <td><span class="badge review">Under Review</span></td>
+                                </tr>
+                                <tr>
+                                    <td>TXN92832</td>
+                                    <td>U1098</td>
+                                    <td>₹1,200</td>
+                                    <td>Transfer</td>
+                                    <td><span class="badge low">Low</span></td>
+                                    <td><span class="badge success">Success</span></td>
+                                </tr>
+                                <tr>
+                                    <td>TXN92833</td>
+                                    <td>U1182</td>
+                                    <td>₹800</td>
+                                    <td>Bill Pay</td>
+                                    <td><span class="badge medium">Medium</span></td>
+                                    <td><span class="badge success">Success</span></td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </section>
+
+                <!-- Placeholder Views for remaining sections -->
+                <section id="complaints" class="view-section">
+                    <div class="section-header"><h2>Complaints & Requests</h2></div>
+                    <div class="card full-card"><p>Complaints management tools and tracking modules go here.</p></div>
+                </section>
+                <section id="security" class="view-section">
+                    <div class="section-header"><h2>Risk & Security Monitoring</h2></div>
+                    <div class="card full-card"><p>Live threat tracking and blockchain verification logs go here.</p></div>
+                </section>
+                <section id="audit" class="view-section">
+                    <div class="section-header"><h2>Audit Logs & Blockchain Records</h2></div>
+                    <div class="card full-card"><p>Immutable activity auditing trail.</p></div>
+                </section>
+                <section id="reports" class="view-section">
+                    <div class="section-header"><h2>Reports & Analytics</h2></div>
+                    <div class="card full-card"><p>Financial performance reports and data exports.</p></div>
+                </section>
+                <section id="admin-mgmt" class="view-section">
+                    <div class="section-header"><h2>Admin Management</h2></div>
+                    <div class="card full-card"><p>Role-based access controls and admin member lists.</p></div>
+                </section>
+                <section id="settings" class="view-section">
+                    <div class="section-header"><h2>System Settings</h2></div>
+                    <div class="card full-card"><p>Platform configurations, security rules, and backup settings.</p></div>
+                </section>
+
+            </div>
+        </main>
+    </div>
+
+    <script src="app.js"></script>
+</body>
+</html>
